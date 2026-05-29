@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OWASP Red Team Playground</title>
+<link rel="stylesheet" href="/static/styles.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/idea.css" />
+</head>
+<body>
+
+<!-- ─── Top nav ─── -->
+<nav class="topnav">
+  <div class="brand">
+    <span class="logo">RT</span>
+    <div>
+      <div class="brand-title">OWASP Red Team Playground</div>
+      <div class="brand-sub">Stress-test AI agents against the OWASP Agentic AI Top 10</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" data-view="wizard">Run tests</button>
+    <button class="nav-btn" data-view="docs">Docs</button>
+    <button class="nav-btn" data-view="settings">Settings</button>
+  </div>
+</nav>
+
+<main class="app">
+
+  <!-- ─── Wizard view ─── -->
+  <section class="view" data-view="wizard">
+
+    <!-- Step bar -->
+    <div class="stepbar">
+      <div class="step active" data-step="1"><span class="num">1</span> Model</div>
+      <div class="step"        data-step="2"><span class="num">2</span> Tests</div>
+      <div class="step"        data-step="3"><span class="num">3</span> Agent</div>
+      <div class="step"        data-step="4"><span class="num">4</span> Payloads</div>
+      <div class="step"        data-step="5"><span class="num">5</span> Run</div>
+    </div>
+
+    <!-- Step 1: Model -->
+    <div class="step-pane active" data-pane="1">
+      <h2>Pick a model</h2>
+      <p class="lede">Which OpenAI model should the target agent use?</p>
+      <div id="modelList" class="model-list"></div>
+      <details class="custom-model">
+        <summary>Use a custom model ID</summary>
+        <input type="text" id="customModel" placeholder="e.g. gpt-4o-2024-08-06" />
+      </details>
+      <div class="step-nav">
+        <span></span>
+        <button class="btn primary" data-next>Next: pick tests &rsaquo;</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Tests -->
+    <div class="step-pane" data-pane="2">
+      <h2>Pick the tests to run</h2>
+      <p class="lede">Choose which attack scenarios to throw at the agent. All 38 by default.</p>
+      <div class="test-toolbar">
+        <button class="btn small" id="selectAll">Select all</button>
+        <button class="btn small" id="selectNone">Select none</button>
+        <button class="btn small" id="selectCritical">Critical only</button>
+        <span class="count-pill"><span id="selCount">0</span> selected</span>
+      </div>
+      <div id="scenarioTree" class="scenario-tree"></div>
+      <div class="step-nav">
+        <button class="btn" data-prev>&lsaquo; Back</button>
+        <button class="btn primary" data-next>Next: configure agent &rsaquo;</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Agent -->
+    <div class="step-pane" data-pane="3">
+      <h2>Configure the agent under test</h2>
+      <p class="lede">This is the AI we're attacking. Use the simple knobs by default, or switch to code mode to paste your own agent.</p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="settings">Settings</button>
+        <button class="tab" data-tab="code">Advanced: edit code</button>
+      </div>
+
+      <div class="tab-pane active" data-tab="settings">
+        <label class="field">
+          <span class="label">System prompt</span>
+          <span class="hint">The first instruction the model sees. The default is intentionally bare so you can see what attacks look like.</span>
+          <textarea id="systemPrompt" rows="4"></textarea>
+        </label>
+        <label class="field">
+          <span class="label">Temperature</span>
+          <span class="hint">Higher = more creative / less predictable. 0\u20131.</span>
+          <input type="range" id="temperature" min="0" max="1" step="0.1" />
+          <span class="range-val" id="temperatureVal">0.7</span>
+        </label>
+      </div>
+
+      <div class="tab-pane" data-tab="code">
+        <p class="lede" style="margin-bottom: 8px;">Your code must define <code>demo_agent(prompt: str) -> str</code>. It's exec'd in-process \u2014 only run code you trust.</p>
+        <textarea id="agentCode"></textarea>
+        <div class="code-actions">
+          <button class="btn small" id="resetCode">Reset to demo_agent.py</button>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn" data-prev>&lsaquo; Back</button>
+        <button class="btn primary" data-next>Next: edit payloads &rsaquo;</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Payloads -->
+    <div class="step-pane" data-pane="4">
+      <h2>Edit the injected prompts (optional)</h2>
+      <p class="lede">Each test sends a payload to the agent. You can tweak any payload before running. Leave them as-is to use the defaults.</p>
+      <div id="payloadEditor" class="payload-editor"></div>
+      <div class="step-nav">
+        <button class="btn" data-prev>&lsaquo; Back</button>
+        <button class="btn primary" data-next>Next: run &rsaquo;</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Run + Report -->
+    <div class="step-pane" data-pane="5">
+
+      <div id="runPanel">
+        <h2>Ready to run</h2>
+        <p class="lede">We'll send <strong><span id="runCount">0</span></strong> payloads to the agent one at a time. This usually takes 1\u20132 minutes.</p>
+        <div class="run-summary" id="runSummary"></div>
+        <div class="step-nav">
+          <button class="btn" data-prev>&lsaquo; Back</button>
+          <button class="btn primary big" id="startRun">Start run</button>
+        </div>
+      </div>
+
+      <div id="progressPanel" hidden>
+        <h2>Running\u2026</h2>
+        <div class="progress-shell">
+          <div class="progress-bar"><div id="progressFill"></div></div>
+          <div class="progress-text"><span id="progressCount">0</span> / <span id="progressTotal">0</span></div>
+        </div>
+        <div id="liveResults" class="live-results"></div>
+        <div class="step-nav">
+          <span></span>
+          <button class="btn" id="cancelRun">Stop</button>
+        </div>
+      </div>
+
+      <div id="reportPanel" hidden></div>
+
+    </div>
+  </section>
+
+  <!-- ─── Docs view ─── -->
+  <section class="view" data-view="docs" hidden>
+    <h2>Docs</h2>
+    <p class="lede">The project's design documents. Click a card to read it inline.</p>
+    <div id="docsList" class="docs-list"></div>
+    <div id="docsReader" class="docs-reader" hidden>
+      <div class="docs-reader-bar">
+        <button class="btn small" id="docsBack">&lsaquo; Back to docs</button>
+        <span id="docsTitle"></span>
+        <span></span>
+      </div>
+      <div id="docsContent" class="docs-content"></div>
+      <iframe id="docsIframe" class="docs-iframe" hidden></iframe>
+    </div>
+  </section>
+
+  <!-- ─── Settings view ─── -->
+  <section class="view" data-view="settings" hidden>
+    <h2>Settings</h2>
+    <p class="lede">Your API key is stored on this machine at <code id="configPath">~/.owasp-redteam/config.json</code> and is never sent anywhere except OpenAI.</p>
+
+    <div class="card">
+      <label class="field">
+        <span class="label">OpenAI API key</span>
+        <span class="hint">Starts with <code>sk-</code>. You can revoke and rotate it any time at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>.</span>
+        <input type="password" id="apiKeyInput" placeholder="sk-..." />
+        <span class="config-status" id="configStatus"></span>
+      </label>
+      <label class="field">
+        <span class="label">Default model</span>
+        <select id="defaultModel"></select>
+      </label>
+      <label class="field">
+        <span class="label">Default system prompt</span>
+        <textarea id="defaultSystemPrompt" rows="3"></textarea>
+      </label>
+      <label class="field">
+        <span class="label">Default temperature</span>
+        <input type="range" id="defaultTemperature" min="0" max="1" step="0.1" />
+        <span class="range-val" id="defaultTemperatureVal">0.7</span>
+      </label>
+      <button class="btn primary" id="saveSettings">Save settings</button>
+      <span class="save-msg" id="saveMsg"></span>
+    </div>
+  </section>
+
+</main>
+
+<!-- Vendor libs -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
+
+<!-- App scripts -->
+<script src="/static/js/api.js"></script>
+<script src="/static/js/docs.js"></script>
+<script src="/static/js/wizard.js"></script>
+<script src="/static/js/main.js"></script>
+
+</body>
+</html>
