@@ -1,1 +1,9 @@
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Blog (not part of the framework)
+blog-agentic-red-team.md
