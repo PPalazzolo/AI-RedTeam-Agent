@@ -1,0 +1,6 @@
+{
+  "name": "aiplat-redteam",
+  "version": "0.1.0",
+  "description": "Run your own agent against the hosted OWASP Agentic AI Top 10 red team (ASI01-ASI10) plus NVIDIA garak. Point it at your agent's HTTP endpoint and get back a security report with findings, severities, and fixes.",
+  "keywords": ["security", "red-team", "owasp", "agentic", "garak", "cloud"]
+}
