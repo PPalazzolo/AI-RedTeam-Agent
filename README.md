@@ -30,7 +30,10 @@ end-to-end before pointing it at a real system.
 | ASI09 | Human-Agent Trust Exploitation | HITL fatigue, fabricated explainability, social engineering |
 | ASI10 | Rogue Agents | Reward hacking, goal drift, workflow hijacking, self-replication |
 
-Each category runs 3–4 scenarios. The default suite is **38 tests**.
+Each category runs 3–4 scenarios — **38 tests** across ASI01–ASI10. The CLI also runs
+[NVIDIA garak](https://github.com/NVIDIA/garak) as an additional suite (model-layer probes),
+whose findings fold into the same report; see
+[`redteam/docs/GARAK_COVERAGE_MATRIX.md`](redteam/docs/GARAK_COVERAGE_MATRIX.md).
 
 ## Repository layout
 
@@ -39,8 +42,11 @@ Each category runs 3–4 scenarios. The default suite is **38 tests**.
 ├── redteam/                      Command-line framework (the core engine)
 │   ├── agentic_redteam.py        10 attack suites + AgenticRedTeam + TestReport
 │   ├── demo_agent.py             Reference OpenAI agent (intentionally vulnerable soft target)
-│   ├── run_redteam.py            CLI entry point: runs the suites against the demo agent
-│   └── docs/                     Threat model, architecture, scenario design
+│   ├── run_redteam.py            CLI entry point: runs ASI01–ASI10 + the garak suite
+│   ├── garak_suite.py            GarakSuite: NVIDIA garak wired in as a first-class suite
+│   ├── run_garak.py              Optional standalone garak runner (garak-native reports)
+│   ├── garak_target.py           Bridge: exposes our (str)->str agent to garak
+│   └── docs/                     Threat model, architecture, scenario design, garak matrix
 ├── owasp-redteam-playground/     Local web app (browser UI over the same scenarios)
 │   ├── app.py                    Flask app (routes only)
 │   ├── start.sh                  Single-command launcher
@@ -117,3 +123,5 @@ and extension points.
 - [`redteam/docs/ARCHITECTURE.md`](redteam/docs/ARCHITECTURE.md) — internal design
 - [`redteam/docs/TEST_SCENARIO_DESIGN.md`](redteam/docs/TEST_SCENARIO_DESIGN.md) — rationale
   and methodology for each attack scenario
+- [`redteam/docs/GARAK_COVERAGE_MATRIX.md`](redteam/docs/GARAK_COVERAGE_MATRIX.md) — coverage
+  comparison against NVIDIA garak's probe suite (overlaps, gaps, and what's unique to each)

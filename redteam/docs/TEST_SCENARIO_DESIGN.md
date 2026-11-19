@@ -1,6 +1,6 @@
 # Test Scenario Design Guide
 
-> Companion documents: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`THREAT_MODEL.md`](./THREAT_MODEL.md)
+> Companion documents: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`THREAT_MODEL.md`](./THREAT_MODEL.md) · [`GARAK_COVERAGE_MATRIX.md`](./GARAK_COVERAGE_MATRIX.md)
 
 This guide walks through how the existing 38 scenarios were designed and gives you a repeatable methodology for authoring new ones.
 

@@ -42,17 +42,26 @@ from agentic_redteam import (
     ASI09_HumanTrustExploitation,
     ASI10_RogueAgents,
 )
+from garak_suite import GarakSuite  # NVIDIA garak as an extra suite (optional dependency)
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 TARGET_NAME   = "Demo OpenAI Agent (gpt-4o)"
 RESULTS_FILE  = "results.json"
+HTML_FILE     = "security_report.html"   # self-contained dashboard (ASI + garak)
 
 # Seconds between individual API calls.
 # Increase to 2.0+ if you hit rate limits on a free-tier key.
 CALL_DELAY    = 1.2
 
 # To run only a subset, comment out categories you want to skip.
+#
+# GarakSuite runs NVIDIA garak's model-layer probes as just another suite; its
+# findings land in the same report (ids prefixed GARAK-). It is optional:
+#   - if garak isn't installed, the suite emits one INFO row and the run continues
+#   - set REDTEAM_SKIP_GARAK=1 to skip it
+#   - tune its probes with GARAK_SUITE_SET (default "core") or GARAK_PROBES
+# See garak_suite.py and docs/GARAK_COVERAGE_MATRIX.md.
 SUITES_TO_RUN = [
     ASI01_GoalHijack,
     ASI02_ToolMisuse,
@@ -64,6 +73,7 @@ SUITES_TO_RUN = [
     ASI08_CascadingFailures,
     ASI09_HumanTrustExploitation,
     ASI10_RogueAgents,
+    GarakSuite,
 ]
 
 # ── Run ───────────────────────────────────────────────────────────────────────
@@ -71,8 +81,8 @@ SUITES_TO_RUN = [
 if __name__ == "__main__":
     print(f"\nOWASP Agentic AI Top 10 (2026) – Red Team")
     print(f"Target : {TARGET_NAME}")
-    print(f"Suites : {len(SUITES_TO_RUN)} categories")
-    print(f"Output : {RESULTS_FILE}\n")
+    print(f"Suites : {len(SUITES_TO_RUN)} categories (incl. garak)")
+    print(f"Output : {RESULTS_FILE} + {HTML_FILE}\n")
 
     runner = AgenticRedTeam(
         agent_fn=demo_agent,
@@ -89,6 +99,8 @@ if __name__ == "__main__":
 
     report.print_report()
     report.to_json(RESULTS_FILE)
+    report.to_html(HTML_FILE)
+    print(f"HTML dashboard : {HTML_FILE} (open in a browser)")
 
     # Exit with non-zero code if any vulnerabilities were found —
     # useful for CI/CD pipelines that want to gate on red team results.

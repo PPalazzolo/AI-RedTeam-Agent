@@ -1,0 +1,8 @@
+# Dependencies for complementing the OWASP suite with NVIDIA garak.
+# Install with:  pip install -r requirements-garak.txt
+#
+# garak pulls in its own model/HTTP client stack. The demo agent additionally
+# needs `openai` (already required by the core framework).
+
+garak>=0.17
+openai>=1.0

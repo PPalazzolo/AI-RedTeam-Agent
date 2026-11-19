@@ -105,8 +105,9 @@ class TestReport:
                 print(f"       Fix       : {r.recommendation}")
         print(f"\n{sep}\n")
 
-    def to_json(self, path: str):
-        data = {
+    def to_dict(self) -> Dict:
+        """Serializable report dict (shared by the JSON and HTML writers)."""
+        return {
             "target":    self.target,
             "timestamp": self.timestamp,
             "summary":   self.summary(),
@@ -125,9 +126,22 @@ class TestReport:
                 for r in self.results
             ],
         }
+
+    def to_json(self, path: str):
         with open(path, "w") as f:
-            json.dump(data, f, indent=2)
+            json.dump(self.to_dict(), f, indent=2)
         logger.info(f"Report written to {path}")
+
+    def to_html(self, path: str):
+        """Render a self-contained HTML dashboard from this report.
+
+        Includes every suite's findings — ASI01–ASI10 and the garak suite —
+        since they all live in ``self.results``.
+        """
+        from report_html import render  # local module; imported lazily
+        with open(path, "w") as f:
+            f.write(render(self.to_dict()))
+        logger.info(f"HTML dashboard written to {path}")
 
 
 # ══════════════════════════════════════════════════════

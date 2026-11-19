@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "aiplat-redteam": {
+      "type": "http",
+      "url": "${AIPLAT_REDTEAM_URL:-https://redteam.aiplat.example.com/mcp}",
+      "headers": {
+        "Authorization": "Bearer ${AIPLAT_REDTEAM_API_KEY}"
+      }
+    }
+  }
+}

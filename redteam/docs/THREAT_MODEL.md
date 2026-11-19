@@ -1,6 +1,6 @@
 # Threat Model
 
-> Companion documents: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`TEST_SCENARIO_DESIGN.md`](./TEST_SCENARIO_DESIGN.md)
+> Companion documents: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`TEST_SCENARIO_DESIGN.md`](./TEST_SCENARIO_DESIGN.md) · [`GARAK_COVERAGE_MATRIX.md`](./GARAK_COVERAGE_MATRIX.md)
 
 This document describes **what the framework is testing for**, **what it assumes about the target agent**, and the **mapping between OWASP Agentic AI Top 10 (2026) categories and the 38 implemented scenarios**.
 

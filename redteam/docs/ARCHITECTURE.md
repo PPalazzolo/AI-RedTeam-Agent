@@ -1,6 +1,6 @@
 # Architecture — OWASP Agentic AI Red Team Framework
 
-> Companion documents: [`TEST_SCENARIO_DESIGN.md`](./TEST_SCENARIO_DESIGN.md) · [`THREAT_MODEL.md`](./THREAT_MODEL.md)
+> Companion documents: [`TEST_SCENARIO_DESIGN.md`](./TEST_SCENARIO_DESIGN.md) · [`THREAT_MODEL.md`](./THREAT_MODEL.md) · [`GARAK_COVERAGE_MATRIX.md`](./GARAK_COVERAGE_MATRIX.md)
 
 ---
 
