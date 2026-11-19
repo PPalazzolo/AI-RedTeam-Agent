@@ -1,9 +1,0 @@
-# Hosted aiplat-redteam MCP server dependencies.
-mcp>=1.2
-httpx>=0.27
-
-# The red team engine itself has no third-party runtime deps for remote targets.
-# garak is OPTIONAL — install it to enable the garak suite (GARAK_* findings):
-#   pip install garak>=0.17
-# (The bundled demo agent's `openai` dependency is NOT needed here, because the
-#  target under test is reached over HTTP, not the local demo agent.)
